@@ -72,20 +72,22 @@ class WebSurfer:
         imgs = requests.get(root + api_image_info + str(id)).json()
         article_info = requests.get(root + api_article_info + str(id)).json()
         print(article_info["query"]["pages"][str(id)]["fullurl"])
-        imgCount = 0;
+        img_count = 0;
         try:
-            imgCount = len(imgs["query"]["pages"][str(id)]["images"])
-            try:
-                img_continue = imgs["query-continue"]["images"]["imcontinue"]
-                while img_continue != "":
-                    imgs = requests.get(root + api_image_info + str(id)+"&imcontinue="+img_continue).json()
-                    imgCount += len(imgs["query"]["pages"][str(id)]["images"])
-                    img_continue = imgs["query-continue"]["images"]["imcontinue"]
-            except:
-                img_continue = ""
+            img_count = len(imgs["query"]["pages"][str(id)]["images"])
         except:
-            imgCount = 0
-        WebSurfer.save_page_info(imgs["query"]["pages"][str(id)]["title"], imgCount, article_info["query"]["pages"][str(id)]["fullurl"])
+            img_count = 0
+
+        try:
+            img_continue = imgs["query-continue"]["images"]["imcontinue"]
+            while img_continue != "":
+                imgs = requests.get(root + api_image_info + str(id)+"&imcontinue="+img_continue).json()
+                img_count += len(imgs["query"]["pages"][str(id)]["images"])
+                img_continue = imgs["query-continue"]["images"]["imcontinue"]
+        except:
+            img_continue = ""
+
+        WebSurfer.save_page_info(imgs["query"]["pages"][str(id)]["title"], img_count, article_info["query"]["pages"][str(id)]["fullurl"])
 
     @staticmethod
     def save_page_info(title, img_count, url):
