@@ -75,6 +75,14 @@ class WebSurfer:
         imgCount = 0;
         try:
             imgCount = len(imgs["query"]["pages"][str(id)]["images"])
+            try:
+                img_continue = imgs["query-continue"]["images"]["imcontinue"]
+                while img_continue != "":
+                    imgs = requests.get(root + api_image_info + str(id)+"&imcontinue="+img_continue).json()
+                    imgCount += len(imgs["query"]["pages"][str(id)]["images"])
+                    img_continue = imgs["query-continue"]["images"]["imcontinue"]
+            except:
+                img_continue = ""
         except:
             imgCount = 0
         WebSurfer.save_page_info(imgs["query"]["pages"][str(id)]["title"], imgCount, article_info["query"]["pages"][str(id)]["fullurl"])
