@@ -10,29 +10,29 @@ api_get_url = "w/api.php?action=query&format=json&list=allpages&aplimit=500&apfi
 api_image_info = "w/api.php?action=query&prop=images&format=json&imlimit=500&pageids="
 api_article_info = "w/api.php?action=query&prop=info&format=json&inprop=url&pageids="
 # name of article on which stopped
-last_article = ""
+last_article = "1619"
+
+# db connection
+con = sqlite3.connect("articles.db")
+cur = con.cursor()
+
 
 class OffLineExplorer:
     @staticmethod
     def check_db():
-        con = sqlite3.connect("articles.db")
-        cur = con.cursor()
         cur.execute(
             "CREATE TABLE IF NOT EXISTS articlesInfo (id INTEGER PRIMARY KEY, title TEXT, url TEXT, countOfImage INTEGER)")
         con.commit()
-        con.close()
+
 
     @staticmethod
     def create_html():
-        con = sqlite3.connect("articles.db")
-        cur = con.cursor()
         cur.execute("""SELECT title, url, countOfImage
         FROM   articlesInfo
         WHERE  countOfImage=(SELECT MAX(countOfImage) FROM articlesInfo)""")
         # cur.execute("SELECT MAX(countOfImage) FROM articlesInfo")
         arr = (cur.fetchall())
         con.commit()
-        con.close()
         file_html = open('index.html', 'w', "utf-8")
         file_html.write("""
         <!DOCTYPE html>
@@ -54,7 +54,7 @@ class WebSurfer:
             # print(str(information_json)[1:])
             counter = counter + 1
             information = requests.get(root + api_get_url + next_article).json()
-            print(information)
+            #print(information)
             try:
                 next_article = information["query-continue"]["allpages"]["apcontinue"]
             except:
@@ -81,8 +81,6 @@ class WebSurfer:
 
     @staticmethod
     def save_page_info(title, img_count, url):
-        con = sqlite3.connect("articles.db")
-        cur = con.cursor()
 
         #title = title.replace('\'', ' ')
         #title = title.replace('\"', ' ')
@@ -100,3 +98,4 @@ class WebSurfer:
 OffLineExplorer.check_db()
 WebSurfer.start_analyzer()
 OffLineExplorer.create_html()
+con.close()
