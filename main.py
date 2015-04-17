@@ -36,7 +36,7 @@ class OffLineExplorer:
         file_html = open('index.html', 'w', "utf-8")
         file_html.write("""
         <!DOCTYPE html>
-        <h1>Articles with maximum number of images in %s<h1>
+        <h1>Articles with maximum number of images in %s</h1>
         """ % (root,))
         for article in arr:
             # file_html.write('<a href="%s">%s</a> — count = %s <br>' % ((article[1]).encode(), (article[0]).encode(), (article[2])))
