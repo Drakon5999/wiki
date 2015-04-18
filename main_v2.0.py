@@ -10,8 +10,10 @@ api_get_url = "w/api.php?action=query&generator=allpages&gapfilterredir=nonredir
 #api_get_url = "w/api.php?action=query&format=json&list=allpages&aplimit=500&apfilterredir=nonredirects&rawcontinue&apfrom="
 #api_image_info = "w/api.php?action=query&prop=images&format=json&imlimit=500&pageids="
 #api_article_info = "w/api.php?action=query&prop=info&format=json&inprop=url&pageids="
+
+
 # name of article on which stopped
-last_article = "215"
+last_article = ""
 
 # db connection
 con = sqlite3.connect("articles.db")
@@ -30,7 +32,8 @@ class OffLineExplorer:
     def create_html():
         cur.execute("""SELECT title, url, countOfImage
         FROM   articlesInfo
-        WHERE  countOfImage=(SELECT MAX(countOfImage) FROM articlesInfo)""")
+        ORDER BY countOfImage DESC
+        LIMIT 50""")
         # cur.execute("SELECT MAX(countOfImage) FROM articlesInfo")
         arr = (cur.fetchall())
         con.commit()
@@ -41,7 +44,7 @@ class OffLineExplorer:
         """ % (root,))
         for article in arr:
             # file_html.write('<a href="%s">%s</a> — count = %s <br>' % ((article[1]).encode(), (article[0]).encode(), (article[2])))
-            print('<a href="%s">%s</a> - count = %s <br>' % (str(article[1]), str(article[0]), str(article[2])), file = file_html)
+            print('<a href="%s">%s</a> - count = %s <br>' % (str(article[1]), str(article[1]), str(article[2])), file = file_html)
 
 
 class WebSurfer:
